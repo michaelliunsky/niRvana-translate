@@ -44,7 +44,7 @@ register_activation_hook(__FILE__, 'nirvana_translate_clear_cache');
 register_deactivation_hook(__FILE__, 'nirvana_translate_clear_cache');
 
 // -------------------------------
-// 插件链接：在插件列表中显示“设置”链接
+// 插件链接：在插件列表中显示"设置"链接
 // -------------------------------
 /**
  * 在插件列表添加快速设置链接。
@@ -54,7 +54,7 @@ register_deactivation_hook(__FILE__, 'nirvana_translate_clear_cache');
  */
 function nirvana_translate_settings_link($links)
 {
-    $settings_link = sprintf('<a href="%s">%s</a>', admin_url('options-general.php?page=nirvana-translate-plugin'), __('设置', 'nirvana-translate'));
+    $settings_link = sprintf('<a href="%s">%s</a>', admin_url('admin.php?page=nirvana-translate-plugin'), __('设置', 'nirvana-translate'));
     array_push($links, $settings_link);
     return $links;
 }
@@ -122,9 +122,9 @@ function nirvana_translate_settings_page()
             <div class="notice notice-info" style="margin-top:16px;padding:12px 16px;">
                 <p style="margin:0 0 8px;"><strong><?php echo esc_html__('使用引导', 'nirvana-translate'); ?></strong></p>
                 <ol style="margin:0 0 8px 20px;">
-                    <li><?php echo esc_html__('在“翻译语言设置”添加语言并保存。', 'nirvana-translate'); ?></li>
+                    <li><?php echo esc_html__('在"翻译语言设置"添加语言并保存。', 'nirvana-translate'); ?></li>
                     <li><?php echo esc_html__('选择 translate.js 引入方式：本地（插件内置）或远程（自定义 URL，提供远程加载失败回退本地）。', 'nirvana-translate'); ?></li>
-                    <li><?php echo esc_html__('到【外观 → 菜单】→ 左侧 niRvana翻译菜单 → 勾选并“添加到菜单”。', 'nirvana-translate'); ?></li>
+                    <li><?php echo esc_html__('到【外观 → 菜单】→ 左侧 niRvana翻译菜单 → 勾选并"添加到菜单"。', 'nirvana-translate'); ?></li>
                 </ol>
                 <p style="margin:0;"><strong><?php echo esc_html__('语言简码参考：', 'nirvana-translate'); ?></strong>
                     <a href="<?php echo esc_url(NIRVANA_TX_URL . 'language.json'); ?>" target="_blank" rel="noopener"><?php echo esc_html__('translate.js 支持列表', 'nirvana-translate'); ?></a>
@@ -275,7 +275,7 @@ function nirvana_translate_render_menu_name()
 {
     $name = get_option(NIRVANA_OPT_MENU_NAME, '🌐 Language');
     printf('<input type="text" name="%1$s" value="%2$s" class="regular-text" placeholder="例如: 🌐 Language" />', esc_attr(NIRVANA_OPT_MENU_NAME), esc_attr($name));
-    echo '<p class="description">' . esc_html__('设置在菜单中显示的翻译按钮名称，默认为 “🌐 Language”。', 'nirvana-translate') . '</p>';
+    echo '<p class="description">' . esc_html__('设置在菜单中显示的翻译按钮名称，默认为 "🌐 Language"。', 'nirvana-translate') . '</p>';
 }
 
 /**
@@ -343,12 +343,6 @@ function nirvana_translate_enqueue_frontend()
 })();
 JS;
     wp_add_inline_script($handle, $inline);
-
-    wp_register_style('nirvana-translate-inline', false);
-    wp_enqueue_style('nirvana-translate-inline');
-    $css = 
-        '.menu-item-language{position:relative}.menu-item-language>.sub-menu{display:none;position:absolute;left:0;top:100%;z-index:9999;min-width:180px;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.08)}.menu-item-language:hover>.sub-menu{display:block}.menu-item-language .sub-menu li a{display:block;padding:8px 12px}';
-    wp_add_inline_style('nirvana-translate-inline', $css);
 }
 add_action('wp_enqueue_scripts', 'nirvana_translate_enqueue_frontend');
 
@@ -362,25 +356,27 @@ function nirvana_translate_render_buttons($type = 'dropdown')
 {
     $langs = get_option(NIRVANA_OPT_LANGS, []);
     if (empty($langs)) {
-        return '<li class="menu-item"><span class="ignore" style="display:block;padding:8px 12px;opacity:.7;">未配置语言</span></li>';
+        return '<li class="menu-item nirvana-no-langs-message"><span class="ignore">' . __('未配置语言', 'nirvana-translate') . '</span></li>';
     }
 
     $items = [];
     foreach ($langs as $lang) {
         $name = esc_html($lang['name']);
         $code = esc_attr($lang['code']);
-        $icon = !empty($lang['icon']) ? '<img src="' . esc_url($lang['icon']) . '" alt="' . $name . '" style="width:20px;height:15px;vertical-align:middle;margin-right:8px;border:1px solid #ddd;" class="ignore" />' : '';
+        $icon = !empty($lang['icon']) ? '<img src="' . esc_url($lang['icon']) . '" alt="' . $name . '" class="nirvana-lang-icon ignore" />' : '';
+        
         if ($type === 'dropdown') {
-            $items[] = '<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="javascript:translate.changeLanguage(\'' . $code . '\');" class="ignore">' . $icon . $name . '</a></li>';
+            $items[] = '<li class="menu-item menu-item-type-custom menu-item-object-custom nirvana-lang-item"><a href="javascript:translate.changeLanguage(\'' . $code . '\');" class="ignore nirvana-lang-link">' . $icon . $name . '</a></li>';
         } else {
-            $items[] = '<li style="display:flex;align-items:center;list-style:none;padding:0 5px;margin:0;"><a href="javascript:translate.changeLanguage(\'' . $code . '\');" style="display:flex;align-items:center;padding:3px 8px;background-color:#0073aa;color:#fff;border-radius:5px;text-decoration:none;" class="ignore">' . $icon . $name . '</a></li>';
+            $items[] = '<li class="nirvana-inline-lang-item"><a href="javascript:translate.changeLanguage(\'' . $code . '\');" class="ignore nirvana-inline-lang-link">' . $icon . $name . '</a></li>';
         }
     }
 
     if ($type === 'dropdown') {
         return implode("\n", $items);
     }
-    return '<ul style="list-style:none;padding:0;margin:0;display:flex;gap:15px;flex-wrap:wrap;justify-content:center;">' . implode("\n", $items) . '</ul>';
+    
+    return '<ul class="nirvana-inline-lang-list">' . implode("\n", $items) . '</ul>';
 }
 
 /**
@@ -440,7 +436,7 @@ function nirvana_translate_menu_output($item_output, $item, $depth, $args)
     if (is_array($item->classes) && in_array('nirvana-translate-menu', $item->classes)) {
         $menu_name = esc_html(get_option(NIRVANA_OPT_MENU_NAME, '🌐 Language'));
         $buttons = nirvana_translate_render_buttons('dropdown');
-        $item_output = '<a href="#" class="ignore">' . $menu_name . '</a><ul class="sub-menu">' . $buttons . '</ul>';
+        $item_output = '<a href="#" class="ignore">' . $menu_name . ' <i class="fa fa-caret-down" style="margin-left:3px;"></i></a><ul class="sub-menu">' . $buttons . '</ul>';
     }
     return $item_output;
 }
@@ -453,7 +449,6 @@ function nirvana_translate_menu_classes($classes, $item, $args, $depth)
 {
     if (is_array($classes) && in_array('nirvana-translate-menu', $classes)) {
         $classes[] = 'menu-item-has-children';
-        $classes[] = 'menu-item-language';
     }
     return $classes;
 }
