@@ -3,7 +3,7 @@
  * Plugin Name:       niRvana-translate 多语言翻译插件
  * Plugin URI:        https://blog.mkliu.top/536.html
  * Description:       基于 translate.js 的 WordPress 多语言翻译插件.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Requires at least: 6.7
  * Requires PHP:      8.0
  * Author:            michaelliunsky
@@ -20,42 +20,33 @@ if (!defined('ABSPATH')) {
 // -------------------------------
 // 常量
 // -------------------------------
-define('NIRVANA_TX_PATH', plugin_dir_path(__FILE__));
 define('NIRVANA_TX_URL', plugin_dir_url(__FILE__));
-define('NIRVANA_OPT_GROUP', 'nirvana_translate_options');
 define('NIRVANA_OPT_LANGS', 'nirvana_translate_languages');
 define('NIRVANA_OPT_MENU_NAME', 'nirvana_translate_menu_name');
-define('NIRVANA_OPT_SCRIPT_SRC', 'nirvana_translate_script_source');
-define('NIRVANA_OPT_REMOTE_URL', 'nirvana_translate_remote_url');
 
 // -------------------------------
-// Activation / Deactivation
+// 加载翻译文本域
 // -------------------------------
-/**
- * 清理缓存
- *
- * @return void
- */
-function nirvana_translate_clear_cache()
-{
-    wp_cache_flush();
+add_action('plugins_loaded', function() {
+    load_plugin_textdomain('nirvana-translate', false, dirname(plugin_basename(__FILE__)) . '/languages');
+});
+
+// -------------------------------
+// 卸载清理
+// -------------------------------
+function nirvana_translate_uninstall() {
+    delete_option(NIRVANA_OPT_LANGS);
+    delete_option(NIRVANA_OPT_MENU_NAME);
 }
-register_activation_hook(__FILE__, 'nirvana_translate_clear_cache');
-register_deactivation_hook(__FILE__, 'nirvana_translate_clear_cache');
+register_uninstall_hook(__FILE__, 'nirvana_translate_uninstall');
 
 // -------------------------------
 // 插件链接：在插件列表中显示"设置"链接
 // -------------------------------
-/**
- * 在插件列表添加快速设置链接。
- *
- * @param array $links 现有链接
- * @return array $links 添加后的链接数组
- */
 function nirvana_translate_settings_link($links)
 {
     $settings_link = sprintf('<a href="%s">%s</a>', admin_url('admin.php?page=nirvana-translate-plugin'), __('设置', 'nirvana-translate'));
-    array_push($links, $settings_link);
+    $links[] = $settings_link;
     return $links;
 }
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'nirvana_translate_settings_link');
@@ -63,11 +54,6 @@ add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'nirvana_translat
 // -------------------------------
 // 管理页面：菜单与设置注册
 // -------------------------------
-/**
- * 添加后台菜单。
- *
- * @return void
- */
 function nirvana_translate_admin_menu()
 {
     add_menu_page(
@@ -77,36 +63,22 @@ function nirvana_translate_admin_menu()
         'nirvana-translate-plugin',
         'nirvana_translate_settings_page',
         'dashicons-translation',
-        61 // 放置在外观附近
+        61
     );
 }
 add_action('admin_menu', 'nirvana_translate_admin_menu');
 
-/**
- * 注册设置项与字段。
- *
- * @return void
- */
-function nirvana_translate_register_settings()
-{
-    register_setting(NIRVANA_OPT_GROUP, NIRVANA_OPT_LANGS, 'nirvana_translate_sanitize_languages');
-    register_setting(NIRVANA_OPT_GROUP, NIRVANA_OPT_MENU_NAME, 'sanitize_text_field');
-    register_setting(NIRVANA_OPT_GROUP, NIRVANA_OPT_SCRIPT_SRC, 'sanitize_text_field');
-    register_setting(NIRVANA_OPT_GROUP, NIRVANA_OPT_REMOTE_URL, 'nirvana_translate_sanitize_remote_url');
+function nirvana_translate_register_settings() {
+    register_setting('nirvana_translate_options', NIRVANA_OPT_LANGS, 'nirvana_translate_sanitize_languages');
+    register_setting('nirvana_translate_options', NIRVANA_OPT_MENU_NAME, 'sanitize_text_field');
 
     add_settings_section('nirvana_translate_section_main', __('语言与脚本设置', 'nirvana-translate'), null, 'nirvana-translate-plugin');
 
     add_settings_field(NIRVANA_OPT_LANGS, __('翻译语言设置', 'nirvana-translate'), 'nirvana_translate_render_languages', 'nirvana-translate-plugin', 'nirvana_translate_section_main');
     add_settings_field(NIRVANA_OPT_MENU_NAME, __('菜单显示名称', 'nirvana-translate'), 'nirvana_translate_render_menu_name', 'nirvana-translate-plugin', 'nirvana_translate_section_main');
-    add_settings_field(NIRVANA_OPT_SCRIPT_SRC, __('translate.js 引入方式', 'nirvana-translate'), 'nirvana_translate_render_script_source', 'nirvana-translate-plugin', 'nirvana_translate_section_main');
 }
 add_action('admin_init', 'nirvana_translate_register_settings');
 
-/**
- * 后台设置页面 HTML 输出。
- *
- * @return void
- */
 function nirvana_translate_settings_page()
 {
     ?>
@@ -114,7 +86,7 @@ function nirvana_translate_settings_page()
         <h1><?php echo esc_html__('niRvana-theme 多语言翻译插件设置', 'nirvana-translate'); ?></h1>
         <form method="post" action="options.php">
             <?php
-            settings_fields(NIRVANA_OPT_GROUP);
+            settings_fields('nirvana_translate_options');
             do_settings_sections('nirvana-translate-plugin');
             submit_button();
             ?>
@@ -123,7 +95,6 @@ function nirvana_translate_settings_page()
                 <p style="margin:0 0 8px;"><strong><?php echo esc_html__('使用引导', 'nirvana-translate'); ?></strong></p>
                 <ol style="margin:0 0 8px 20px;">
                     <li><?php echo esc_html__('在"翻译语言设置"添加语言并保存。', 'nirvana-translate'); ?></li>
-                    <li><?php echo esc_html__('选择 translate.js 引入方式：本地（插件内置）或远程（自定义 URL，提供远程加载失败回退本地）。', 'nirvana-translate'); ?></li>
                     <li><?php echo esc_html__('到【外观 → 菜单】→ 左侧 niRvana翻译菜单 → 勾选并"添加到菜单"。', 'nirvana-translate'); ?></li>
                 </ol>
                 <p style="margin:0;"><strong><?php echo esc_html__('语言简码参考：', 'nirvana-translate'); ?></strong>
@@ -144,13 +115,6 @@ function nirvana_translate_settings_page()
 // -------------------------------
 // 校验函数
 // -------------------------------
-/**
- * 校验自定义语言数组。
- * 每项必须包含 name 与 code，可选 icon（URL）。
- *
- * @param mixed $input
- * @return array
- */
 function nirvana_translate_sanitize_languages($input)
 {
     $result = [];
@@ -170,56 +134,27 @@ function nirvana_translate_sanitize_languages($input)
     return $result;
 }
 
-/**
- * 校验远程 URL（只允许 http/https 且路径含 .js）。
- *
- * @param string $url
- * @return string
- */
-function nirvana_translate_sanitize_remote_url($url)
-{
-    $url = trim($url);
-    if (empty($url)) {
-        return '';
-    }
-    $url = esc_url_raw($url);
-    if (!preg_match('#^https?://#i', $url)) {
-        return '';
-    }
-    $path = parse_url($url, PHP_URL_PATH);
-    if ($path === null || strpos($path, '.js') === false) {
-        return '';
-    }
-    return $url;
-}
-
 // -------------------------------
-// 设置字段渲染：语言列表（ JS ）
+// 设置字段渲染：语言列表
 // -------------------------------
-/**
- * 输出可增删的语言配置 UI。
- *
- * @return void
- */
 function nirvana_translate_render_languages()
 {
     $langs = get_option(NIRVANA_OPT_LANGS, []);
     ?>
     <div id="nirvana-languages-wrap">
         <div id="nirvana-languages-list">
-            <?php if (!empty($langs) && is_array($langs)): foreach ($langs as $i => $lang): ?>
+            <?php foreach ($langs as $i => $lang): ?>
                 <div class="nirvana-lang-row" style="margin-bottom:10px;">
                     <input type="text" name="<?php echo esc_attr(NIRVANA_OPT_LANGS); ?>[<?php echo $i; ?>][name]" value="<?php echo esc_attr($lang['name']); ?>" placeholder="语言名称（自定义）" />
                     <input type="text" name="<?php echo esc_attr(NIRVANA_OPT_LANGS); ?>[<?php echo $i; ?>][code]" value="<?php echo esc_attr($lang['code']); ?>" placeholder="语言简码" />
                     <input type="text" name="<?php echo esc_attr(NIRVANA_OPT_LANGS); ?>[<?php echo $i; ?>][icon]" value="<?php echo esc_attr($lang['icon']); ?>" placeholder="图标 URL (可空)" />
                     <button type="button" class="button nirvana-remove-lang">删除</button>
                 </div>
-            <?php endforeach; endif; ?>
+            <?php endforeach; ?>
         </div>
 
         <button type="button" class="button button-primary" id="nirvana-add-lang"><?php echo esc_html__('添加语言', 'nirvana-translate'); ?></button>
 
-        <!-- 模板 -->
         <template id="nirvana-lang-template">
             <div class="nirvana-lang-row" style="margin-bottom:10px;">
                 <input type="text" name="__NAME__" placeholder="语言名称" />
@@ -249,12 +184,9 @@ function nirvana_translate_render_languages()
         addBtn.addEventListener('click', function(){
             var idx = list.children.length;
             var html = tpl.replace('__NAME__', '<?php echo esc_js(NIRVANA_OPT_LANGS); ?>['+idx+'][name]').replace('__CODE__', '<?php echo esc_js(NIRVANA_OPT_LANGS); ?>['+idx+'][code]').replace('__ICON__', '<?php echo esc_js(NIRVANA_OPT_LANGS); ?>['+idx+'][icon]');
-            var div = document.createElement('div');
-            div.innerHTML = html;
-            list.appendChild(div.firstElementChild);
+            list.insertAdjacentHTML('beforeend', html);
         });
 
-        // 事件委托处理删除
         list.addEventListener('click', function(e){
             if (e.target && e.target.classList.contains('nirvana-remove-lang')){
                 e.target.closest('.nirvana-lang-row').remove();
@@ -266,11 +198,6 @@ function nirvana_translate_render_languages()
     <?php
 }
 
-/**
- * 菜单显示名称字段渲染
- *
- * @return void
- */
 function nirvana_translate_render_menu_name()
 {
     $name = get_option(NIRVANA_OPT_MENU_NAME, '🌐 Language');
@@ -278,82 +205,46 @@ function nirvana_translate_render_menu_name()
     echo '<p class="description">' . esc_html__('设置在菜单中显示的翻译按钮名称，默认为 "🌐 Language"。', 'nirvana-translate') . '</p>';
 }
 
-/**
- * 脚本来源字段渲染
- *
- * @return void
- */
-function nirvana_translate_render_script_source()
-{
-    $src = get_option(NIRVANA_OPT_SCRIPT_SRC, 'local');
-    $remote = get_option(NIRVANA_OPT_REMOTE_URL, 'https://cdn.staticfile.net/translate.js/3.18.0/translate.js');
-    ?>
-    <fieldset>
-        <label><input type="radio" name="<?php echo esc_attr(NIRVANA_OPT_SCRIPT_SRC); ?>" value="local" <?php checked($src, 'local'); ?> /> <?php echo esc_html__('本地（插件内置 translate.js）', 'nirvana-translate'); ?></label><br />
-        <label><input type="radio" name="<?php echo esc_attr(NIRVANA_OPT_SCRIPT_SRC); ?>" value="remote" <?php checked($src, 'remote'); ?> /> <?php echo esc_html__('远程（自定义 URL）', 'nirvana-translate'); ?></label><br />
-        <input type="text" name="<?php echo esc_attr(NIRVANA_OPT_REMOTE_URL); ?>" value="<?php echo esc_attr($remote); ?>" class="regular-text code" placeholder="https://.../translate.js" style="max-width:480px;" />
-        <p class="description"><?php echo esc_html__('建议使用可信、可稳定访问的 HTTPS 源。远程加载失败时自动回退到本地。', 'nirvana-translate'); ?></p>
-    </fieldset>
-    <?php
-}
-
 // -------------------------------
 // 前端：资源加载与初始化
 // -------------------------------
-/**
- * 在前端加载 translate.js（远程优先并回退本地）
- *
- * @return void
- */
 function nirvana_translate_enqueue_frontend()
 {
-    $src = get_option(NIRVANA_OPT_SCRIPT_SRC, 'local');
-    $remote = get_option(NIRVANA_OPT_REMOTE_URL, 'https://cdn.staticfile.net/translate.js/3.18.0/translate.js');
     $handle = 'nirvana-translate-js';
+    wp_enqueue_script($handle, NIRVANA_TX_URL . 'translate.js', [], null, true);
 
-    if ($src === 'remote' && !empty($remote)) {
-        wp_enqueue_script($handle, esc_url($remote), [], null, true);
-    } else {
-        wp_enqueue_script($handle, NIRVANA_TX_URL . 'translate.js', [], '1.0.0', true);
-    }
-
-    // 初始化脚本：如果远程未定义 translate，则动态加载本地并执行 boot
-    $fallback = NIRVANA_TX_URL . 'translate.js';
     $inline = <<<JS
 (function(){
-  // Plugin info
   console.warn('Plugin niRvana-translate | Designed by michaelliunsky https://blog.mkliu.top');
 
   function boot(){
     try{
-      translate.selectLanguageTag.show=false;
-      translate.service.use('client.edge');
-      translate.listener.start();
-      translate.execute();
-    }catch(e){}
+        translate.log = function(){};
+        translate.selectLanguageTag.show = false;
+        translate.service.use('client.edge');
+        translate.request.api.init = '';
+        translate.request.api.connectTest = '';
+        translate.listener.start();
+        translate.execute();
+    }catch(e){
+        console.warn('niRvana-translate: init failed', e);
+    }
   }
-  document.addEventListener('DOMContentLoaded', function(){
-    if (typeof window.translate === 'undefined'){
-      var s = document.createElement('script');
-      s.src = '{$fallback}';
-      s.onload = boot;
-      document.head.appendChild(s);
-    } else { boot(); }
-  });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
 })();
 JS;
-    wp_add_inline_script($handle, $inline);
+    wp_add_inline_script($handle, $inline, 'after');
 }
 add_action('wp_enqueue_scripts', 'nirvana_translate_enqueue_frontend');
 
-/**
- * 生成语言按钮 HTML，可返回下拉项或并列按钮列表
- *
- * @param string $type 'dropdown'|'inline'
- * @return string
- */
-function nirvana_translate_render_buttons($type = 'dropdown')
-{
+// -------------------------------
+// 菜单相关功能
+// -------------------------------
+function nirvana_translate_render_buttons() {
     $langs = get_option(NIRVANA_OPT_LANGS, []);
     if (empty($langs)) {
         return '<li class="menu-item nirvana-no-langs-message"><span class="ignore">' . __('未配置语言', 'nirvana-translate') . '</span></li>';
@@ -362,46 +253,38 @@ function nirvana_translate_render_buttons($type = 'dropdown')
     $items = [];
     foreach ($langs as $lang) {
         $name = esc_html($lang['name']);
-        $code = esc_attr($lang['code']);
-        $icon = !empty($lang['icon']) ? '<img src="' . esc_url($lang['icon']) . '" alt="' . $name . '" class="nirvana-lang-icon ignore" />' : '';
-        
-        if ($type === 'dropdown') {
-            $items[] = '<li class="menu-item menu-item-type-custom menu-item-object-custom nirvana-lang-item"><a href="javascript:translate.changeLanguage(\'' . $code . '\');" class="ignore nirvana-lang-link">' . $icon . $name . '</a></li>';
-        } else {
-            $items[] = '<li class="nirvana-inline-lang-item"><a href="javascript:translate.changeLanguage(\'' . $code . '\');" class="ignore nirvana-inline-lang-link">' . $icon . $name . '</a></li>';
+        $code_js = esc_js($lang['code']);
+        $icon = '';
+        if (!empty($lang['icon'])) {
+            $icon = '<img src="' . esc_url($lang['icon']) . '" alt="' . esc_attr($lang['name']) . '" class="nirvana-lang-icon ignore" />';
         }
+        $items[] = '<li class="menu-item menu-item-type-custom menu-item-object-custom nirvana-lang-item"><a href="javascript:translate.changeLanguage(\'' . $code_js . '\');" class="ignore nirvana-lang-link">' . $icon . $name . '</a></li>';
     }
-
-    if ($type === 'dropdown') {
-        return implode("\n", $items);
-    }
-    
-    return '<ul class="nirvana-inline-lang-list">' . implode("\n", $items) . '</ul>';
+    return implode("\n", $items);
 }
 
-/**
- * 在 nav-menus 页面添加自定义 metabox，允许一键添加翻译按钮到菜单
- * 使用 admin_head-nav-menus.php 钩子保证只在菜单管理页执行
- */
-function nirvana_translate_register_nav_metabox()
-{
-    add_meta_box('nirvana-translate-metabox', __('niRvana翻译菜单', 'nirvana-translate'), 'nirvana_translate_nav_metabox_cb', 'nav-menus', 'side', 'default');
+function nirvana_translate_register_nav_metabox() {
+    add_meta_box(
+        'nirvana-translate-metabox',
+        __('niRvana翻译菜单', 'nirvana-translate'),
+        'nirvana_translate_nav_metabox_cb',
+        'nav-menus',
+        'side',
+        'default'
+    );
 }
-add_action('admin_head-nav-menus.php', 'nirvana_translate_register_nav_metabox');
+add_action('add_meta_boxes', 'nirvana_translate_register_nav_metabox');
 
-/**
- * metabox 内容回调
- */
 function nirvana_translate_nav_metabox_cb()
 {
-    $menu_name = esc_attr(get_option(NIRVANA_OPT_MENU_NAME, '🌐 Language'));
+    $menu_name = get_option(NIRVANA_OPT_MENU_NAME, '🌐 Language');
     ?>
     <div id="posttype-nirvana-translate" class="posttypediv">
         <div id="tabs-panel-nirvana-translate" class="tabs-panel tabs-panel-active">
             <ul id="nirvana-translate-checklist" class="categorychecklist form-no-clear">
                 <li>
                     <label class="menu-item-title">
-                        <input type="checkbox" class="menu-item-checkbox" name="menu-item[-1][menu-item-object-id]" value="-1" /> <?php echo $menu_name; ?>
+                        <input type="checkbox" class="menu-item-checkbox" name="menu-item[-1][menu-item-object-id]" value="-1" /> <?php echo esc_html($menu_name); ?>
                     </label>
                     <input type="hidden" class="menu-item-type" name="menu-item[-1][menu-item-type]" value="custom" />
                     <input type="hidden" class="menu-item-object" name="menu-item[-1][menu-item-object]" value="custom" />
@@ -422,49 +305,22 @@ function nirvana_translate_nav_metabox_cb()
     <?php
 }
 
-/**
- * 当菜单项包含特定类时，输出语言下拉 HTML（hook 于 walker_nav_menu_start_el）
- *
- * @param string $item_output
- * @param object $item
- * @param int $depth
- * @param object $args
- * @return string
- */
 function nirvana_translate_menu_output($item_output, $item, $depth, $args)
 {
-    if (is_array($item->classes) && in_array('nirvana-translate-menu', $item->classes)) {
+    if (in_array('nirvana-translate-menu', $item->classes)) {
         $menu_name = esc_html(get_option(NIRVANA_OPT_MENU_NAME, '🌐 Language'));
-        $buttons = nirvana_translate_render_buttons('dropdown');
+        $buttons = nirvana_translate_render_buttons();
         $item_output = '<a href="#" class="ignore">' . $menu_name . ' <i class="fa fa-caret-down" style="margin-left:3px;"></i></a><ul class="sub-menu">' . $buttons . '</ul>';
     }
     return $item_output;
 }
 add_filter('walker_nav_menu_start_el', 'nirvana_translate_menu_output', 10, 4);
 
-/**
- * 为菜单项添加必要的 class，触发主题对子菜单样式的处理
- */
 function nirvana_translate_menu_classes($classes, $item, $args, $depth)
 {
-    if (is_array($classes) && in_array('nirvana-translate-menu', $classes)) {
+    if (in_array('nirvana-translate-menu', $classes)) {
         $classes[] = 'menu-item-has-children';
     }
     return $classes;
 }
 add_filter('nav_menu_css_class', 'nirvana_translate_menu_classes', 10, 4);
-
-/**
- * 为所有页面添加 no-cache 头以避免翻译缓存问题
- *
- * @param array $headers
- * @return array
- */
-function nirvana_translate_prevent_cache($headers)
-{
-    $headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
-    $headers['Pragma'] = 'no-cache';
-    $headers['Expires'] = '0';
-    return $headers;
-}
-add_filter('wp_headers', 'nirvana_translate_prevent_cache');

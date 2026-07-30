@@ -45,6 +45,12 @@ niRvana-translate 使用 [GPL V3.0](https://github.com/michaelliunsky/niRvana-tr
 
 # 更新日志
 
+## 20260730 v1.1.0
+
+- 优化代码
+- 更新库
+- 删除不安全的 CDN 载入功能
+
 ## 20250822 v1.0.0
 
 - 新插件发布
