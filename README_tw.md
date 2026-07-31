@@ -12,7 +12,7 @@ niRvana-translate 多語言翻譯外掛
 
 [![GitHub last commit](https://img.shields.io/github/last-commit/michaelliunsky/niRvana-translate?style=flat-square)](https://github.com/michaelliunsky/niRvana-translate/commits/master) [![GitHub Release Date](https://img.shields.io/github/release-date/michaelliunsky/niRvana-translate?style=flat-square)](https://github.com/michaelliunsky/niRvana-translate/releases) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/michaelliunsky/niRvana-translate?style=flat-square)
 
-## 功能
+# 功能
 
 - 後台新增語言（名稱、簡碼、圖示）
 - 自訂選單按鈕名稱
