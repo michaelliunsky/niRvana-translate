@@ -1,6 +1,6 @@
 ![niRvana-translate](https://cdn.jsdelivr.net/gh/michaelliunsky/cdn@master/niRvana-translate-screenshot.jpg)
 
-**简体中文** | [繁體中文](README_tw.md) | [English](README_en.md) | [Russian](README_ru.md)
+**简体中文** | [繁體中文](README_tw.md) | [English](README_en.md) | [Русский](README_ru.md)
 
 # niRvana-translate
 
@@ -12,14 +12,12 @@ niRvana-translate 多语言翻译插件
 
 [![GitHub last commit](https://img.shields.io/github/last-commit/michaelliunsky/niRvana-translate?style=flat-square)](https://github.com/michaelliunsky/niRvana-translate/commits/master) [![GitHub Release Date](https://img.shields.io/github/release-date/michaelliunsky/niRvana-translate?style=flat-square)](https://github.com/michaelliunsky/niRvana-translate/releases) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/michaelliunsky/niRvana-translate?style=flat-square)
 
-# 插件基本特性
+# 功能
 
-- **多语言支持** - 基于 translate.js 实现网页实时翻译，支持多种语言切换
-- **可视化配置** - 提供 WordPress 后台设置界面，可轻松添加和管理语言选项
-- **灵活的脚本加载** - 支持本地或远程 CDN 加载 translate.js，远程加载失败时自动回退到本地
-- **菜单集成** - 可将翻译功能一键添加到网站导航菜单中，方便用户访问
-- **自定义显示** - 支持自定义菜单按钮名称和语言显示名称
-- **图标支持** - 可为每种语言配置图标，提升用户体验
+- 后台添加语言（名称、简码、图标）
+- 自定义菜单按钮名称
+- 添加到导航菜单
+- 内置 translate.js
 
 # 安装
 
@@ -30,8 +28,7 @@ niRvana-translate 多语言翻译插件
 # 使用引导
 
 1. 在“翻译语言设置”添加语言并保存。
-2. 选择 translate.js 引入方式：本地（插件内置）或远程（自定义 URL，提供远程加载失败回退本地）。
-3. 到【外观 → 菜单】→ 左侧 niRvana 翻译菜单 → 勾选并“添加到菜单”。
+2. 到【外观 → 菜单】→ 左侧 niRvana 翻译菜单 → 勾选并“添加到菜单”。
 
 # Demo
 

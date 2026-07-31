@@ -1,10 +1,10 @@
 ![niRvana-translate](https://cdn.jsdelivr.net/gh/michaelliunsky/cdn@master/niRvana-translate-screenshot.jpg)
 
-[简体中文](README.md) | [繁體中文](README_tw.md) | [English](README_en.md) | **Russian**
+[简体中文](README.md) | [繁體中文](README_tw.md) | [English](README_en.md) | **Русский**
 
 # niRvana-translate
 
-niRvana-translate — многоязычный плагин перевода
+niRvana-translate — плагин для многоязычного перевода
 
 [![GitHub release](https://img.shields.io/github/v/release/michaelliunsky/niRvana-translate?color=%235e72e4&style=for-the-badge)](https://github.com/michaelliunsky/niRvana-translate/releases) [![GitHub All Releases](https://img.shields.io/github/downloads/michaelliunsky/niRvana-translate/total?style=for-the-badge)](https://github.com/michaelliunsky/niRvana-translate/releases) [![GitHub](https://img.shields.io/github/license/michaelliunsky/niRvana-translate?color=blue&style=for-the-badge)](https://github.com/michaelliunsky/niRvana-translate/blob/master/LICENSE)
 
@@ -12,44 +12,41 @@ niRvana-translate — многоязычный плагин перевода
 
 [![GitHub last commit](https://img.shields.io/github/last-commit/michaelliunsky/niRvana-translate?style=flat-square)](https://github.com/michaelliunsky/niRvana-translate/commits/master) [![GitHub Release Date](https://img.shields.io/github/release-date/michaelliunsky/niRvana-translate?style=flat-square)](https://github.com/michaelliunsky/niRvana-translate/releases) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/michaelliunsky/niRvana-translate?style=flat-square)
 
-# Основные особенности плагина
+# Возможности
 
-- **Поддержка нескольких языков** — реализует моментальный перевод страниц на основе translate.js, поддерживает переключение между различными языками.
-- **Визуальная настройка** — предоставляет интерфейс настроек в админке WordPress, позволяет легко добавлять и управлять языковыми опциями.
-- **Гибкая загрузка скриптов** — поддерживает загрузку translate.js локально или с удалённого CDN; при неудачной загрузке с CDN автоматически откатывается на локальную версию.
-- **Интеграция в меню** — позволяет одним кликом добавить функцию перевода в навигационное меню сайта для удобного доступа пользователям.
-- **Пользовательский вывод** — поддерживает настройку названия кнопки в меню и отображаемых названий языков.
-- **Поддержка иконок** — можно назначить иконку для каждого языка для улучшения пользовательского опыта.
+- Добавление языков через админ-панель (название, код, иконка)
+- Настройка текста кнопки меню
+- Размещение в навигационном меню
+- Встроенная библиотека translate.js
 
 # Установка
 
-Требования к окружению: **рекомендуется совместимость с PHP 8.3**
+Системные требования: **PHP 8.3** (рекомендуется для лучшей совместимости)
 
-Скачайте .zip-файл со страницы [Release](https://github.com/michaelliunsky/niRvana-translate/releases), затем загрузите и установите его через раздел «Плагины» в админке WordPress.
+Скачайте .zip-архив со [страницы релизов](https://github.com/michaelliunsky/niRvana-translate/releases), затем загрузите его в WordPress через **«Плагины» → «Добавить новый» → «Загрузить плагин»** и активируйте.
 
-# Руководство по использованию
+# Инструкция по использованию
 
-1. В разделе «Настройки языков перевода» добавьте языки и сохраните.
-2. Выберите способ подключения translate.js: локально (встроено в плагин) или удалённо (укажите URL). При неудачной загрузке удалённой версии будет выполнен откат на локальную.
-3. Перейдите в «Внешний вид → Меню» → в левой колонке выберите меню niRvana Translate → отметьте и нажмите «Добавить в меню».
+1. В разделе **«Настройки языка перевода»** добавьте нужные языки и сохраните изменения.
+2. Перейдите в **«Внешний вид» → «Меню»**. В левой панели выберите блок **«niRvana Translate»** (или «Меню перевода niRvana»), отметьте необходимые пункты и нажмите **«Добавить в меню»**.
 
 # Демо
 
 [blog.mkliu.top](https://blog.mkliu.top/)
 
-# Внимание
+# Важно: лицензия и авторство
 
-niRvana-translate распространяется под лицензией [GPL V3.0](https://github.com/michaelliunsky/niRvana-translate/blob/main/LICENSE). Пожалуйста, соблюдайте условия этой лицензии при модификации и дальнейшей разработке.
+Плагин niRvana-translate распространяется под лицензией [GPL v3.0](https://github.com/michaelliunsky/niRvana-translate/blob/main/LICENSE). При любых доработках и дальнейшем использовании необходимо соблюдать условия этой лицензии.
 
-Вы **должны оставить на странице плагина название niRvana-translate и ссылку на автора**; в противном случае не используйте плагин niRvana-translate.
+Вы **обязаны** сохранить оригинальное название плагина и ссылку на автора на странице плагинов. В противном случае просим вас не использовать niRvana-translate.
 
-# Журнал изменений
+# История изменений
 
 См. [readme.md](https://github.com/michaelliunsky/niRvana-translate#%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97)
 
-# Пожертвования
+# Поддержать проект
 
-Если вам нравится плагин niRvana-translate, вы можете поддержать разработку — угостите меня чашкой кофе.
+Если вам понравился плагин niRvana-translate, вы можете угостить меня чашечкой кофе, чтобы поддержать разработку.
 
-![QR код WeChat](https://cdn.jsdelivr.net/gh/michaelliunsky/cdn@master/wechat.jpg)
-![QR код Alipay](https://cdn.jsdelivr.net/gh/michaelliunsky/cdn@master/alipay.jpg)
+![QR-код для доната через WeChat](https://cdn.jsdelivr.net/gh/michaelliunsky/cdn@master/wechat.jpg)
+![QR-код для доната через Alipay](https://cdn.jsdelivr.net/gh/michaelliunsky/cdn@master/alipay.jpg)
