@@ -3,7 +3,7 @@
  * Plugin Name:       niRvana-translate 多语言翻译插件
  * Plugin URI:        https://blog.mkliu.top/536.html
  * Description:       基于 translate.js 的 WordPress 多语言翻译插件.
- * Version:           1.1.0
+ * Version:           1.1.1
  * Requires at least: 6.7
  * Requires PHP:      8.0
  * Author:            michaelliunsky
@@ -23,13 +23,6 @@ if (!defined('ABSPATH')) {
 define('NIRVANA_TX_URL', plugin_dir_url(__FILE__));
 define('NIRVANA_OPT_LANGS', 'nirvana_translate_languages');
 define('NIRVANA_OPT_MENU_NAME', 'nirvana_translate_menu_name');
-
-// -------------------------------
-// 加载翻译文本域
-// -------------------------------
-add_action('plugins_loaded', function() {
-    load_plugin_textdomain('nirvana-translate', false, dirname(plugin_basename(__FILE__)) . '/languages');
-});
 
 // -------------------------------
 // 卸载清理
@@ -83,7 +76,7 @@ function nirvana_translate_settings_page()
 {
     ?>
     <div class="wrap">
-        <h1><?php echo esc_html__('niRvana-theme 多语言翻译插件设置', 'nirvana-translate'); ?></h1>
+        <h1><?php echo esc_html__('niRvana-translate 多语言翻译插件设置', 'nirvana-translate'); ?></h1>
         <form method="post" action="options.php">
             <?php
             settings_fields('nirvana_translate_options');
@@ -273,7 +266,7 @@ function nirvana_translate_register_nav_metabox() {
         'default'
     );
 }
-add_action('add_meta_boxes', 'nirvana_translate_register_nav_metabox');
+add_action('admin_init', 'nirvana_translate_register_nav_metabox');
 
 function nirvana_translate_nav_metabox_cb()
 {

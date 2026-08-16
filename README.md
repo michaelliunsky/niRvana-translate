@@ -42,6 +42,10 @@ niRvana-translate 使用 [GPL V3.0](https://github.com/michaelliunsky/niRvana-tr
 
 # 更新日志
 
+## 20260816 v1.1.1
+
+- 修复「外观 → 菜单」页面中「niRvana翻译菜单」无法显示的问题
+
 ## 20260730 v1.1.0
 
 - 优化代码
